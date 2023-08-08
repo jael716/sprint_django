@@ -1,0 +1,53 @@
+{% extends 'base_layout.html' %}
+
+{% load static %}
+{% block content %}
+<div class="container">
+  <h2 class="my-4">Facturas</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">N° factura</th>
+        <th scope="col">Producto</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Neto</th>
+        <th scope="col">Iva</th>
+        <th scope="col">Total</th>
+        <th scope="col">Fecha emision</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <a href="{% url 'factura' %}"><input type='submit' value='Crear factura'/></a><br>
+      <form method="get" action="{% url 'vistafactura' %}">
+        <label>Filtrar por:</label>
+        <select name="campo">
+            <option value="n_factura">Número de Factura</option>
+            <option value="producto">Producto</option>
+            <option value="total">Total</option>
+        </select>
+        <input type="text" name="filtro" placeholder="Ingrese valor">
+        <input type="submit" value="Buscar">
+    </form>
+      {% for factura in object_list %}
+        <tr>
+          <td>{{ factura.n_factura }}</td>
+          <td>{{ factura.producto }}</td>
+          <td>{{ factura.cantidad }}</td>
+          <td>{{ factura.neto }}</td>
+          <td>{{ factura.iva}}</td>
+          <td>{{ factura.total }}</td>
+          <td>{{ factura.fecha_emision }}</td>
+          <td><a href="{% url 'eliminar_factura' factura.id %}"><input type='submit' value='Eliminar'/></a></td>
+          <td><a href="{% url 'modificar_factura' factura.id %}">{{factura.title}}<input type='submit' value='Modificar'/></a></td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="3">No hay facturas.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -5,10 +5,10 @@ import datetime
 class Factura(models.Model):
     n_factura = models.CharField(max_length=100)
     producto = models.CharField(max_length=100)
-    cantidad = models.IntegerField(max_length=100)
-    neto = models.IntegerField(max_length=100)
-    iva = models.IntegerField(max_length=100)
-    total = models.IntegerField(max_length=100)
+    cantidad = models.IntegerField()
+    neto = models.IntegerField()
+    iva = models.IntegerField()
+    total = models.IntegerField()
     fecha_emision= models.DateField(datetime.date.today())
 
     def __str__(self):

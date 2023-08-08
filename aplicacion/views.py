@@ -5,12 +5,52 @@ from django.contrib.auth.models import User
 from .models import Proveedor, Factura, Consumidor
 from django.contrib import messages
 from .forms import UserRegistrationForm, FacturaForm, ConsumidorForm, ProveedorForm
-# Create your views here.
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
+from django.views.generic.list import ListView
+from django.views.generic.edit import UpdateView,DeleteView
+
+
 
 def welcome(request):
     return render(request, "home.html")
+class factura_list(ListView):
+    model=Factura
+    template_name='vista_factura.html'
+    context_object_name = 'posts'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        campo = self.request.GET.get('campo')
+        filtro = self.request.GET.get('filtro')
 
-def factura(request):
+        if campo and filtro:
+            lookup = f"{campo}__icontains"
+            queryset = queryset.filter(**{lookup: filtro})
+
+        return queryset
+class factura(CreateView):
+    model=Factura
+    form_class=FacturaForm
+    template_name='factura.html'
+    success_url=reverse_lazy('vistafactura')
+
+class eliminar_factura(DeleteView):
+    model=Factura
+    form_class=FacturaForm
+    template_name='eliminar_factura.html'
+    success_url=reverse_lazy('vistafactura')
+
+class modificar_factura(UpdateView):
+    model=Factura
+    form_class=FacturaForm
+    template_name='modificar_factura.html'
+    success_url=reverse_lazy('vistafactura')
+
+
+
+
+
+"""def factura(request):
     form = FacturaForm()
     if request.method == "POST":
         form = FacturaForm(request.POST)
@@ -24,13 +64,48 @@ def factura(request):
             factura.iva = form.cleaned_data['iva']
             factura.total = form.cleaned_data['total']
             factura.fecha_emision =form.cleaned_data['fecha_emision']
-            factura.save()
+            form.save()
         else:
             print("Datos invalidos")
         return redirect('/factura')
     context = {'form': form}
 
     return render(request, 'factura.html', context=context)
+
+def factura_list(request):
+
+    filtro = request.GET.get('filtro')
+
+    if filtro:
+        facturas = Factura.objects.filter(title__icontains=filtro)
+    else:
+        facturas= Factura.objects.all()
+
+    return render(
+        request,
+        'vista_factura.html',
+        {'facturas':facturas}
+    )
+
+def eliminar_factura(request, id):
+    facturas = Factura.objects.get(pk=id)
+    if request.method == "POST":
+             facturas.delete()
+             return redirect('/vistafactura')
+    
+    return render(request, 'eliminar_factura.html', {'facturas': facturas})
+
+
+def modificar_factura(request, id):
+    facturas = Factura.objects.get(pk=id)
+    form = FacturaForm(instance=facturas)
+    if request.method =="POST":
+        form = FacturaForm(request.POST, instance=facturas)
+        form.save()
+        return redirect('vistafactura')
+    else:
+        return render(request, 'modificar_factura.html', {'form':form})"""
+    
 @login_required
 def consumidor(request):
     form = ConsumidorForm()
@@ -46,7 +121,7 @@ def consumidor(request):
             consumidor.comuna= form.cleaned_data['comuna']
             consumidor.ciudad = form.cleaned_data['ciudad']
             consumidor.tipo_compra =form.cleaned_data['tipo_compra']
-            consumidor.save()
+            form.save()
         else:
             print("Datos invalidos")
         return redirect('/consumidor')
@@ -68,7 +143,7 @@ def proveedor(request):
             proveedor.email= form.cleaned_data['email']
             proveedor.telefono = form.cleaned_data['telefono']
             proveedor.tipo_venta =form.cleaned_data['tipo_venta']
-            proveedor.save()
+            form.save()
         else:
             print("Datos invalidos")
         return redirect('/proveedor')

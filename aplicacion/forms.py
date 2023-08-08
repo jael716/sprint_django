@@ -4,21 +4,16 @@ from django.contrib.auth.models import User, Group, Permission
 from .models import Factura, Consumidor, Proveedor
 
 class FacturaForm(forms.ModelForm):
-
     class Meta:
         model = Factura 
-        fields = '__all__'
+        fields = ['n_factura','producto','cantidad','neto','iva','total','fecha_emision']
     
     def __init__(self, *args, **kwargs):
         super(FacturaForm, self).__init__(*args, **kwargs)
+        form_fields = ['n_factura','producto','cantidad','neto','iva','total','fecha_emision']
+        for field in form_fields:
+            self.fields[field].widget.attrs['class'] = 'form-control'
 
-        self.fields['n_factura'].widget.attrs['class'] = 'form-control'
-        self.fields['producto'].widget.attrs['class'] = 'form-control'
-        self.fields['cantidad'].widget.attrs['class'] = 'form-control'
-        self.fields['neto'].widget.attrs['class'] = 'form-control'
-        self.fields['iva'].widget.attrs['class'] = 'form-control'
-        self.fields['total'].widget.attrs['class'] = 'form-control'
-        self.fields['fecha_emision'].widget.attrs['class'] = 'form-control'
 
 class ConsumidorForm(forms.ModelForm):
     class Meta:
@@ -63,7 +58,6 @@ class UserRegistrationForm(UserCreationForm):
         queryset=Permission.objects.all(),
         widget=forms.CheckboxSelectMultiple
     )
-
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
